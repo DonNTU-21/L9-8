@@ -18,13 +18,5 @@
     <ClCompile Include="Source.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Validating.c">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Validating.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>
