@@ -38,17 +38,17 @@ int main()
 
 	while (1)
 	{		
-		printf("%s\nЧто нужно сделать с файлом?\n", LINE);
-		printf("1 - Создать файл\n");
-		printf("2 - Вывод содержимого\n");
-		printf("0 - Выход\n");
-		printf("Ваш выбор: ");
+		printf("%s\nР§С‚Рѕ РЅСѓР¶РЅРѕ СЃРґРµР»Р°С‚СЊ СЃ С„Р°Р№Р»РѕРј?\n", LINE);
+		printf("1 - РЎРѕР·РґР°С‚СЊ С„Р°Р№Р»\n");
+		printf("2 - Р’С‹РІРѕРґ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ\n");
+		printf("0 - Р’С‹С…РѕРґ\n");
+		printf("Р’Р°С€ РІС‹Р±РѕСЂ: ");
 		choice = ValidateINT();
 		printf("\n\n");
 		while (choice > 3 || choice < 0)
 		{
-			printf("Ошибка, такой категории нет. Повторите попытку!\n");
-			printf("Ваш выбор: ");
+			printf("РћС€РёР±РєР°, С‚Р°РєРѕР№ РєР°С‚РµРіРѕСЂРёРё РЅРµС‚. РџРѕРІС‚РѕСЂРёС‚Рµ РїРѕРїС‹С‚РєСѓ!\n");
+			printf("Р’Р°С€ РІС‹Р±РѕСЂ: ");
 			choice = ValidateINT();
 		}
 		switch (choice)
@@ -82,28 +82,28 @@ void FileCreate()
 	file = fopen("res.dat", "wb+");
 	if (file == NULL)
 	{
-		printf("Ошибка открытия файла\n");
+		printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°\n");
 		exit(-1);
 	}
 	strcpy(e.name, "a");
 
 	while (strcmp(e.name, "") != 0)
 	{
-		printf("\nНаименование селхоз продукции: ");
+		printf("\nРќР°РёРјРµРЅРѕРІР°РЅРёРµ СЃРµР»С…РѕР· РїСЂРѕРґСѓРєС†РёРё: ");
 		gets(e.name);
 		if (strcmp(e.name, "") != 0)
 		{
 			fwrite(&e.name, sizeof(e.name), 1, file);
 			for (int i = 0; i < 2; i++)
 			{
-				printf("Производство в %d: ", years[i]);
+				printf("РџСЂРѕРёР·РІРѕРґСЃС‚РІРѕ РІ %d: ", years[i]);
 				e.area[i] = ValidateINT();
 				fflush(stdin);
 				fwrite(&e.area[i], sizeof(e.area[i]), 1, file);
 			}
 		}	
 	}
-	printf("Данные записаны в файл res.dat\n\n\n");
+	printf("Р”Р°РЅРЅС‹Рµ Р·Р°РїРёСЃР°РЅС‹ РІ С„Р°Р№Р» res.dat\n\n\n");
 	fclose(file);
 
 }
@@ -111,7 +111,7 @@ void DisplayFileContent(char name[13])
 {
 	if ((file = fopen(name, "r")) == NULL)
 	{
-		printf("Ошибка открытия файла\n");
+		printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°\n");
 		exit(-1);
 	}
 	int len,
@@ -153,22 +153,22 @@ void AnalyzeFileContent()
 
 	if ((file = fopen("res.dat", "r")) == NULL)
 	{
-		printf("Ошибка открытия файла\n");
+		printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°\n");
 		exit(-1);
 	}
 	if ((MaxArea = fopen("MaxArea.dat", "wb+")) == NULL)
 	{
-		printf("Ошибка открытия файла\n");
+		printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°\n");
 		exit(-1);
 	}
 	if ((OverThousandArea = fopen("OverThousandArea.dat", "wb+")) == NULL)
 	{
-		printf("Ошибка открытия файла\n");
+		printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°\n");
 		exit(-1);
 	}
 	if ((Sorted = fopen("Sorted.dat", "wb+")) == NULL)
 	{
-		printf("Ошибка открытия файла\n");
+		printf("РћС€РёР±РєР° РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°\n");
 		exit(-1);
 	}
 
@@ -185,13 +185,13 @@ void AnalyzeFileContent()
 		fread(&e.area[0], sizeof(int), 1, file);
 		fread(&e.area[1], sizeof(int), 1, file);
 
-		// Max. Культура '60
+		// Max. РљСѓР»СЊС‚СѓСЂР° '60
 		if (maxArea < e.area[0])						
 		{
 			strcpy(maxAreaCulture, e.name);
 			maxArea = e.area[0];
 		}	
-		// Культуры более 1000 га.
+		// РљСѓР»СЊС‚СѓСЂС‹ Р±РѕР»РµРµ 1000 РіР°.
 		if (e.area[1] > 1000)							
 		{
 			fwrite(e.name, sizeof(e.name), 1, OverThousandArea);
@@ -259,7 +259,7 @@ int ValidateINT()
 	while (!isdigit(data[0]))
 	{
 		fflush(stdin);
-		printf("\nНеверный ввод! Повторите попытку: ");
+		printf("\nРќРµРІРµСЂРЅС‹Р№ РІРІРѕРґ! РџРѕРІС‚РѕСЂРёС‚Рµ РїРѕРїС‹С‚РєСѓ: ");
 		gets(data);
 	}
 	return atoi(data);
