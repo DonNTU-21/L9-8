@@ -1,17 +1,20 @@
 #define _CRT_SECURE_NO_WARNINGS
-#define LINE "============================================================"
-#define Culture struct Culture 
+//#include "stdafx.h"
+
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <conio.h>
 #include <string.h>
 #include <locale.h>
-
+#include <ctype.h>
+#define LINE "============================================================"
+#define Culture struct Culture 
 
 void FileCreate();
 void AnalyzeFileContent();
 void DisplayFileContent(char name[13]);
+void Sort(FILE*);
 int ValidateINT();
 
 Culture
@@ -23,21 +26,17 @@ Culture
 FILE* file;
 Culture e;
 int years[] = { 1960, 1967 };
-
-
-
+int N;
 
 int main()
 {
-	setlocale(LC_ALL, "");
+	setlocale(LC_ALL, "rus");
 	system("chcp 1251");
 	system("color F0");
-	SetConsoleCP(1251);
-	SetConsoleOutputCP(1251);
 	int choice = 0;
 
 	while (1)
-	{		
+	{
 		printf("%s\nЧто нужно сделать с файлом?\n", LINE);
 		printf("1 - Создать файл\n");
 		printf("2 - Вывод содержимого\n");
@@ -55,7 +54,7 @@ int main()
 		{
 		case 1:	FileCreate();
 			break;
-		case 2: 
+		case 2:
 			AnalyzeFileContent();
 			printf("\t\tres.dat: \n");
 			DisplayFileContent("res.dat");
@@ -63,13 +62,13 @@ int main()
 			printf("\n\t\tMaxArea.dat: \n");
 			DisplayFileContent("MaxArea.dat");
 
-			printf("\n\t\OverThousandArea.dat: \n");
+			printf("\n\t\tOverThousandArea.dat: \n");
 			DisplayFileContent("OverThousandArea.dat");
 
 			printf("\n\t\tSorted.dat: \n");
 			DisplayFileContent("Sorted.dat");
 			break;
-		case 0: 
+		case 0:
 			system("pause");
 			return 0;
 		}
@@ -90,6 +89,7 @@ void FileCreate()
 	while (strcmp(e.name, "") != 0)
 	{
 		printf("\nНаименование селхоз продукции: ");
+		//N++;
 		gets(e.name);
 		if (strcmp(e.name, "") != 0)
 		{
@@ -101,7 +101,7 @@ void FileCreate()
 				fflush(stdin);
 				fwrite(&e.area[i], sizeof(e.area[i]), 1, file);
 			}
-		}	
+		}
 	}
 	printf("Данные записаны в файл res.dat\n\n\n");
 	fclose(file);
@@ -113,44 +113,48 @@ void DisplayFileContent(char name[13])
 	{
 		printf("Ошибка открытия файла\n");
 		exit(-1);
+		system("pause");
 	}
 	int len,
 		i;
 	fseek(file, 0, SEEK_END);
 	len = ftell(file);
 	i = 0;
-	while(i<len)
+	while (i < len)
 	{
 		fseek(file, i, SEEK_SET);
-		fread(&e.name, sizeof(e.name), 1, file);
-		fread(&e.area[0], sizeof(int), 1, file);
-		fread(&e.area[1], sizeof(int), 1, file);
+		fread(&e, sizeof(Culture), 1, file);
 		printf("%s %d %d\n", e.name, e.area[0], e.area[1]);
-		i += sizeof(e.name)+2*sizeof(int);
+		i += sizeof(Culture);
 	}
 	fclose(file);
 }
 void AnalyzeFileContent()
 {
+
 #pragma region Variables
-	int maxArea = 0;
-	char maxAreaCulture[50];
+	char tempName[30];
 
 	unsigned char c1, c2;
 
-	int len, 
-		i, 
-		j = 0, 
-		t, 
-		tempName[30];
+	int len,
+		i,
+		lenSorted,
+		v,
+		j = 0,
+		t;
+
 #pragma endregion
 
 	Culture sorted[30];
+	Culture max;
+	Culture x;
 
 	FILE* MaxArea,
 		* OverThousandArea,
 		* Sorted;
 
+#pragma region Files
 	if ((file = fopen("res.dat", "r")) == NULL)
 	{
 		printf("Ошибка открытия файла\n");
@@ -171,85 +175,90 @@ void AnalyzeFileContent()
 		printf("Ошибка открытия файла\n");
 		exit(-1);
 	}
+#pragma endregion
 
 	fseek(file, 0, SEEK_END);
 	len = ftell(file);
+	lenSorted = ftell(Sorted);
 	i = 0;
+	v = 0;
 
-	strcpy(maxAreaCulture, "a");
 
 	while (i < len)
 	{
+
 		fseek(file, i, SEEK_SET);
-		fread(&e.name, sizeof(e.name), 1, file);
-		fread(&e.area[0], sizeof(int), 1, file);
-		fread(&e.area[1], sizeof(int), 1, file);
+		fread(&e, sizeof(Culture), 1, file);
 
 		// Max. Культура '60
-		if (maxArea < e.area[0])						
+		if (max.area[0] < e.area[0])
 		{
-			strcpy(maxAreaCulture, e.name);
-			maxArea = e.area[0];
-		}	
+
+			strcpy(max.name, e.name);
+			max.area[0] = e.area[0];
+			max.area[1] = e.area[1];
+		}
 		// Культуры более 1000 га.
-		if (e.area[1] > 1000)							
+		if (e.area[1] > 1000)
 		{
-			fwrite(e.name, sizeof(e.name), 1, OverThousandArea);
-			fwrite(&e.area[0], sizeof(int), 1, OverThousandArea);
-			fwrite(&e.area[1], sizeof(int), 1, OverThousandArea);
+			fwrite(&e, sizeof(Culture), 1, OverThousandArea);
 		}
 
 		if (e.area[0] < 1300)
 		{
-			strcpy(sorted[j].name, e.name);
-			sorted[j].area[0] = e.area[0];
-			sorted[j].area[1] = e.area[1];
-			j++;
+			fwrite(&e, sizeof(Culture), 1, Sorted);
 		}
-
-		i += sizeof(e.name) + 2 * sizeof(int);
+		N++;
+		i += sizeof(Culture);
 	}
 
-	for (int k = 0; k < j; k++)
-	{
-		for (int u = j-1; u > k; u--)
-		{
-			c1 = sorted[u - 1].name[0];
-			c2 = sorted[u].name[0];
-			
-			//printf("%c < %c", c1, c2);
+	fwrite(&max, sizeof(max), 1, MaxArea);
+	Sort(Sorted);
 
-			if (c1 < c2)
-			{
-				//printf(" - true");
-				strcpy(tempName, sorted[u - 1].name);
-				strcpy(sorted[u - 1].name, sorted[u].name);
-				strcpy(sorted[u].name, tempName);
-				for (int v = 0; v < 2; v++)
-				{
-					t = sorted[u - 1].area[v];
-					sorted[u - 1].area[v] = sorted[u].area[v];
-					sorted[u].area[v] = t;
-				}
-			}
-			//printf("\n");
-		}
-	}
-
-	fwrite(maxAreaCulture, sizeof(maxAreaCulture), 1, MaxArea);
-	fwrite(&maxArea, sizeof(int), 1, MaxArea);
-
-	for (int i = 0; i < j; i++)
-	{
-		fwrite(&sorted[i].name, sizeof(sorted[i].name), 1, Sorted);
-		fwrite(&sorted[i].area[0], sizeof(int), 1, Sorted);
-		fwrite(&sorted[i].area[1], sizeof(int), 1, Sorted);
-	}
-	
 	fclose(file);
 	fclose(MaxArea);
 	fclose(OverThousandArea);
 	fclose(Sorted);
+}
+void Sort(FILE* sort)
+{
+	int i = 0,
+		j = 0,
+		pos;
+
+	Culture a, b;
+
+	fseek(sort, 0, SEEK_SET);
+
+	while (i < (sizeof(Culture))*(N))
+	{
+		fseek(sort, i, SEEK_SET);
+		fread(&a, sizeof(Culture), 1, sort);
+
+		j = i + sizeof(Culture);
+
+		while (j < (sizeof(Culture)*(N-1)))
+		{
+			fseek(sort, j, SEEK_SET);
+			fread(&b, sizeof(Culture), 1, sort);
+
+			if (strcmp(a.name, b.name) < 0)
+			{
+				printf("%s < %s\n", a.name, b.name);
+
+				pos = i;
+				fseek(sort, pos, SEEK_SET);
+				fwrite(&b, sizeof(Culture), 1, sort);
+
+				pos = j;
+				fseek(sort, pos, SEEK_SET);
+				fwrite(&a, sizeof(Culture), 1, sort);
+				strcpy(a.name, b.name);
+			}
+			j += sizeof(Culture);
+		}
+		i += sizeof(Culture);
+	}
 }
 
 int ValidateINT()
@@ -264,3 +273,4 @@ int ValidateINT()
 	}
 	return atoi(data);
 }
+
