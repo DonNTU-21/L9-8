@@ -132,23 +132,13 @@ void DisplayFileContent(char name[13])
 void AnalyzeFileContent()
 {
 
-#pragma region Variables
-	char tempName[30];
-
-	unsigned char c1, c2;
 
 	int len,
 		i,
-		lenSorted,
-		v,
-		j = 0,
-		t;
+		j = 0;
 
-#pragma endregion
 
-	Culture sorted[30];
 	Culture max;
-	Culture x;
 
 	FILE* MaxArea,
 		* OverThousandArea,
@@ -179,9 +169,7 @@ void AnalyzeFileContent()
 
 	fseek(file, 0, SEEK_END);
 	len = ftell(file);
-	lenSorted = ftell(Sorted);
 	i = 0;
-	v = 0;
 
 
 	while (i < len)
@@ -244,7 +232,7 @@ void Sort(FILE* sort)
 
 			if (strcmp(a.name, b.name) < 0)
 			{
-				printf("%s < %s\n", a.name, b.name);
+				//printf("%s < %s\n", a.name, b.name);
 
 				pos = i;
 				fseek(sort, pos, SEEK_SET);
